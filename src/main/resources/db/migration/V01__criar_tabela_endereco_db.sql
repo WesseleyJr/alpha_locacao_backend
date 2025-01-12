@@ -1,0 +1,11 @@
+CREATE TABLE endereco (
+	id SERIAL PRIMARY KEY,
+	logradouro TEXT NOT NULL,
+	numero INTEGER NOT NULL,
+	complemento VARCHAR(100),
+	bairro	VARCHAR(255) NOT NULL,
+	cidade VARCHAR(255) NOT NULL,
+	uf VARCHAR(2) NOT NULL,
+	codigo_postal VARCHAR(20) NOT NULL,
+	pais VARCHAR(100) NOT NULL
+);
