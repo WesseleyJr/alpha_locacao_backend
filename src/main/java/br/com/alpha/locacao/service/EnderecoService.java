@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.alpha.locacao.domain.Endereco;
 import br.com.alpha.locacao.repository.EnderecoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -24,7 +25,7 @@ public class EnderecoService {
 		Optional<Endereco> byId = enderecoRepository.findById(id);
 		
 		if (!byId.isPresent()) {
-			throw new RuntimeException("Endereço não encontrado");
+			throw new EntityNotFoundException("Endereço não encontrado");
 		}
 		
 		Endereco endereco = byId.get();
@@ -35,14 +36,14 @@ public class EnderecoService {
 	public Endereco inserir(Endereco enderecoD) {
 		
 		Endereco endereco = new Endereco();
-		endereco.setBairro(enderecoD.getBairro());
-		endereco.setCidade(enderecoD.getCidade());
+		endereco.setBairro(enderecoD.getBairro().toLowerCase());
+		endereco.setCidade(enderecoD.getCidade().toLowerCase());
 		endereco.setCodigoPostal(enderecoD.getCodigoPostal());
-		endereco.setComplemento(enderecoD.getComplemento());
-		endereco.setLogradouro(enderecoD.getLogradouro());
+		endereco.setComplemento(enderecoD.getComplemento().toLowerCase());
+		endereco.setLogradouro(enderecoD.getLogradouro().toLowerCase());
 		endereco.setNumero(enderecoD.getNumero());
-		endereco.setPais(enderecoD.getPais());
-		endereco.setUf(enderecoD.getUf());
+		endereco.setPais(enderecoD.getPais().toLowerCase());
+		endereco.setUf(enderecoD.getUf().toLowerCase());
 		
 		return enderecoRepository.save(endereco);
 	}
@@ -52,7 +53,7 @@ public class EnderecoService {
 		Optional<Endereco> byId = enderecoRepository.findById(id);
 
 		if (!byId.isPresent()) {
-			throw new RuntimeException("Endereço nãoo encontrado");
+			throw new EntityNotFoundException("Endereço nãoo encontrado");
 		}
 
 		Endereco endereco = byId.get();
@@ -72,7 +73,7 @@ public class EnderecoService {
 	@Transactional
 	public void deletar(Long id) {
 		if (!enderecoRepository.existsById(id)) {
-			throw new RuntimeException("Endereço não encontrado");
+			throw new EntityNotFoundException("Endereço não encontrado");
 		}
 
 		enderecoRepository.deleteById(id);

@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.alpha.locacao.domain.Colaborador;
 import br.com.alpha.locacao.domain.Endereco;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +39,17 @@ public record ColaboradorDTO(
         @NotBlank(message = "CEP não pode estar vazio")
         @Size(min = 8, max = 8, message = "CEP deve ter 8 dígitos.")
         List<String> perfis,
-        Endereco endereco
+        Endereco endereco,
+    	@NotBlank(message = "Cargo nao pode estar vazio")
+    	@Size(min = 3, max = 255, message = "O cargo deve ter entre 3 e 255 caracteres.")
+    	String cargo,
+    	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    	@NotNull(message = "Data Contratação nao pode estar vazio")
+    	Date dataContratacao,
+    	@NotNull(message = "Dependente nao pode estar vazio")
+        Integer dependente,
+    	@NotNull(message = "Salario nao pode estar vazio")
+    	Double salario
 ) {
     public Colaborador toEntity() {
         Colaborador colaborador = new Colaborador();
@@ -46,6 +59,10 @@ public record ColaboradorDTO(
         colaborador.setCpf(this.cpf);
         colaborador.setEmail(this.email);
         colaborador.setTelefone(this.telefone);
+        colaborador.setCargo(this.cargo);
+        colaborador.setSalario(this.salario);
+        colaborador.setDataContratacao(this.dataContratacao);
+        colaborador.setDependente(this.dependente);
         return colaborador;
     }
 
@@ -62,7 +79,11 @@ public record ColaboradorDTO(
                 colaborador.getEmail(),
                 colaborador.getTelefone(),
                 perfis,
-                colaborador.getEndereco()
+                colaborador.getEndereco(),
+                colaborador.getCargo(),
+                colaborador.getDataContratacao(),
+                colaborador.getDependente(),
+                colaborador.getSalario()
         );
     }
 }

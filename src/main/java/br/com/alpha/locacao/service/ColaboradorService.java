@@ -16,10 +16,13 @@ import br.com.alpha.locacao.domain.Endereco;
 import br.com.alpha.locacao.domain.Perfil;
 import br.com.alpha.locacao.dto.ColaboradorDTO;
 import br.com.alpha.locacao.dto.ColaboradorInserirDTO;
+import br.com.alpha.locacao.exception.CpfException;
 import br.com.alpha.locacao.exception.EmailException;
 import br.com.alpha.locacao.exception.SenhaException;
+import br.com.alpha.locacao.exception.TelefoneException;
 import br.com.alpha.locacao.repository.ColaboradorRepository;
 import br.com.alpha.locacao.repository.EnderecoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -46,28 +49,46 @@ public class ColaboradorService {
 
 	public ColaboradorDTO buscarId(Long id) {
 		return colaboradorRepository.findById(id).map(ColaboradorDTO::toDto)
-				.orElseThrow(() -> new RuntimeException("Colaborador com ID " + id + " não encontrado."));
+				.orElseThrow(() -> new EntityNotFoundException("Colaborador com ID " + id + " não encontrado."));
 	}
 
 	@Transactional
-	public ColaboradorDTO inserir(ColaboradorInserirDTO colaboradorInserirDto) throws EmailException, SenhaException {
-
+	public ColaboradorDTO inserir(ColaboradorInserirDTO colaboradorInserirDTO) throws EmailException, SenhaException, TelefoneException, CpfException {
+		if (!colaboradorInserirDTO.getSenha().equals(colaboradorInserirDTO.getConfirmaSenha())) {
+			throw new SenhaException("Senha e Confirma Senha não são iguais");
+		}
+		if (colaboradorRepository.findByEmail(colaboradorInserirDTO.getEmail()) != null) {
+			throw new EmailException("Email já existente");
+		}
+		if (colaboradorRepository.findByTelefone(colaboradorInserirDTO.getTelefone()) != null) {
+			throw new TelefoneException("Telefone já existente");
+		}
+		if (colaboradorRepository.findByCpf(colaboradorInserirDTO.getCpf()) != null) {
+			throw new CpfException("Cpf já existente");
+		}
+		
+		
 		Endereco enderecoAssociado = null;
 
-		enderecoAssociado = verificacao(colaboradorInserirDto);
+		enderecoAssociado = verificacao(colaboradorInserirDTO);
 		
 		Colaborador colaborador = new Colaborador();
-		colaborador.setNome(Normalizer.normalize(colaboradorInserirDto.getNome(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""));
-		colaborador.setCpf(colaboradorInserirDto.getCpf());
-		colaborador.setDataNascimento(colaboradorInserirDto.getDataNascimento());
-		colaborador.setEmail(colaboradorInserirDto.getEmail());
-		colaborador.setTelefone(colaboradorInserirDto.getTelefone());
+		colaborador.setNome(Normalizer.normalize(colaboradorInserirDTO.getNome(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""));
+		colaborador.setCpf(colaboradorInserirDTO.getCpf());
+		colaborador.setDataNascimento(colaboradorInserirDTO.getDataNascimento());
+		colaborador.setEmail(colaboradorInserirDTO.getEmail());
+		colaborador.setTelefone(colaboradorInserirDTO.getTelefone());
 		colaborador.setEndereco(enderecoAssociado);
+		colaborador.setCargo(colaboradorInserirDTO.getCargo());
+		colaborador.setSalario(colaboradorInserirDTO.getSalario());
+		colaborador.setDependente(colaboradorInserirDTO.getDependente());
+		colaborador.setDataContratacao(colaboradorInserirDTO.getDataContratacao());
+		
 
-		colaborador.setSenha(encoder.encode(colaboradorInserirDto.getSenha()));
+		colaborador.setSenha(encoder.encode(colaboradorInserirDTO.getSenha()));
 
 		Set<ColaboradorPerfil> perfis = new HashSet<>();
-		for (Perfil perfil : colaboradorInserirDto.getPerfis()) {
+		for (Perfil perfil : colaboradorInserirDTO.getPerfis()) {
 			perfil = perfilService.buscar(perfil.getId());
 			ColaboradorPerfil colaboradorPerfil = new ColaboradorPerfil(colaborador, perfil);
 			perfis.add(colaboradorPerfil);
@@ -80,11 +101,24 @@ public class ColaboradorService {
 	}
 
 	@Transactional
-	public ColaboradorDTO atualizar(ColaboradorInserirDTO colaboradorInserirDTO, Long id) {
+	public ColaboradorDTO atualizar(ColaboradorInserirDTO colaboradorInserirDTO, Long id) throws EmailException, SenhaException, TelefoneException, CpfException {
 		Optional<Colaborador> colaboradorOPT = colaboradorRepository.findById(id);
+		
+		if (!colaboradorInserirDTO.getSenha().equals(colaboradorInserirDTO.getConfirmaSenha())) {
+			throw new SenhaException("Senha e Confirma Senha não são iguais");
+		}
+		if (colaboradorRepository.findByEmail(colaboradorInserirDTO.getEmail()) != null) {
+			throw new EmailException("Email já existente");
+		}
+		if (colaboradorRepository.findByTelefone(colaboradorInserirDTO.getTelefone()) != null) {
+			throw new TelefoneException("Telefone já existente");
+		}
+		if (colaboradorRepository.findByCpf(colaboradorInserirDTO.getCpf()) != null) {
+			throw new CpfException("Cpf já existente");
+		}
 
 		if (colaboradorOPT.isEmpty()) {
-			throw new RuntimeException("Colaborador não encontrado");
+			throw new EntityNotFoundException("Colaborador não encontrado");
 		}
 
 		Endereco enderecoAssociado = null;
@@ -98,6 +132,10 @@ public class ColaboradorService {
 		colaborador.setEmail(colaboradorInserirDTO.getEmail());
 		colaborador.setTelefone(colaboradorInserirDTO.getTelefone());
 		colaborador.setEndereco(enderecoAssociado);
+		colaborador.setCargo(colaboradorInserirDTO.getCargo());
+		colaborador.setSalario(colaboradorInserirDTO.getSalario());
+		colaborador.setDependente(colaboradorInserirDTO.getDependente());
+		colaborador.setDataContratacao(colaboradorInserirDTO.getDataContratacao());
 
 		colaborador.setSenha(encoder.encode(colaboradorInserirDTO.getSenha()));
 
@@ -118,24 +156,12 @@ public class ColaboradorService {
 	@Transactional
 	public void deletar(Long id) {
 		if (!colaboradorRepository.existsById(id)) {
-			throw new RuntimeException("Colaborador não encontrado");
+			throw new EntityNotFoundException("Colaborador não encontrado");
 		}
 		colaboradorRepository.deleteById(id);
 	}
 
-	private Endereco verificacao(ColaboradorInserirDTO colaboradorInserirDto) throws EmailException, SenhaException {
-
-		if (!colaboradorInserirDto.getSenha().equals(colaboradorInserirDto.getConfirmaSenha())) {
-			throw new SenhaException("Senha e Confirma Senha não são iguais");
-		}
-
-		if (colaboradorRepository.findByEmail(colaboradorInserirDto.getEmail()) != null) {
-			throw new EmailException("Email já cadastrado");
-		}
-
-		if (colaboradorRepository.findByCpf(colaboradorInserirDto.getCpf()) != null) {
-			throw new RuntimeException("Cpf já cadastrado");
-		}
+	private Endereco verificacao(ColaboradorInserirDTO colaboradorInserirDto){
 
 		List<Endereco> byLogradouro = enderecoRepository
 				.findByLogradouro(colaboradorInserirDto.getEndereco().getLogradouro());
@@ -144,9 +170,9 @@ public class ColaboradorService {
 
 		for (Endereco endereco : byLogradouro) {
 			if (endereco.getNumero().equals(colaboradorInserirDto.getEndereco().getNumero())
-					&& endereco.getComplemento().equals(colaboradorInserirDto.getEndereco().getComplemento())
-					&& endereco.getBairro().equals(colaboradorInserirDto.getEndereco().getBairro())
-					&& endereco.getCidade().equals(colaboradorInserirDto.getEndereco().getCidade())) {
+					&& endereco.getComplemento().toUpperCase().equals(colaboradorInserirDto.getEndereco().getComplemento().toUpperCase())
+					&& endereco.getBairro().toUpperCase().equals(colaboradorInserirDto.getEndereco().getBairro().toUpperCase())
+					&& endereco.getCidade().toUpperCase().equals(colaboradorInserirDto.getEndereco().getCidade().toUpperCase())) {
 				enderecoAssociado = endereco;
 				return enderecoAssociado;
 			}

@@ -41,7 +41,6 @@ public class EnderecoController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Endereco> inserir(@Valid @RequestBody Endereco endereco) {
-		System.out.println("tesssste" + endereco.getBairro());
 		Endereco end = enderecoService.inserir(endereco);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(end).toUri();
 		return ResponseEntity.created(uri).body(end);

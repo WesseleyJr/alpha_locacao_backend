@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.alpha.locacao.domain.Endereco;
 import br.com.alpha.locacao.domain.Perfil;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -41,6 +44,20 @@ public class ColaboradorInserirDTO {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @NotNull(message = "Data de nascimento não pode estar vazia.")
 	private Date dataNascimento;
+	
+	@NotBlank(message = "Cargo nao pode estar vazio")
+	@Size(min = 3, max = 255, message = "O cargo deve ter entre 3 e 255 caracteres.")
+	private String cargo;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+	@NotNull(message = "Data Contratação nao pode estar vazio")
+	private Date dataContratacao;
+	
+	@NotNull(message = "Dependente nao pode estar vazio")
+	private Integer dependente;
+	
+	@NotNull(message = "Salario nao pode estar vazio")
+	private Double salario;
 	
 	private Endereco endereco;
 	
@@ -117,6 +134,37 @@ public class ColaboradorInserirDTO {
 	public void setPerfis(Set<Perfil> perfis) {
 		this.perfis = perfis;
 	}
-	
+
+	public String getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(String cargo) {
+		this.cargo = cargo;
+	}
+
+	public Date getDataContratacao() {
+		return dataContratacao;
+	}
+
+	public void setDataContratacao(Date dataContratacao) {
+		this.dataContratacao = dataContratacao;
+	}
+
+	public Integer getDependente() {
+		return dependente;
+	}
+
+	public void setDependente(Integer dependente) {
+		this.dependente = dependente;
+	}
+
+	public Double getSalario() {
+		return salario;
+	}
+
+	public void setSalario(Double salario) {
+		this.salario = salario;
+	}
 	
 }

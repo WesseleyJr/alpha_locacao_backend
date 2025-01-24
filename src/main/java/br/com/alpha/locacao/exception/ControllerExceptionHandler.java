@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,6 +36,36 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
 	}
 	
+
+	@ExceptionHandler(ConstantsException.class)
+	private ResponseEntity<Object> handleConstantsException(ConstantsException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	            HttpStatus.BAD_REQUEST.value(),
+	            "Constants Invalidos",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(DadosBancariosException.class)
+	private ResponseEntity<Object> handleDadosBancariosException(DadosBancariosException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	            HttpStatus.UNPROCESSABLE_ENTITY.value(),
+	            "Erro no envio de dados bancarios",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
 	
 	@ExceptionHandler(EmailException.class)
 	private ResponseEntity<Object> handleEmailException(EmailException ex, WebRequest request) {
@@ -42,13 +73,13 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 	    erros.add(ex.getMessage());
 
 	    ErroResposta erroResposta = new ErroResposta(
-	            HttpStatus.UNPROCESSABLE_ENTITY.value(),
+	    		HttpStatus.CONFLICT.value(),
 	            "Erro no envio de e-mail",
 	            LocalDateTime.now(),
 	            erros
 	    );
 
-	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	    return new ResponseEntity<>(erroResposta, HttpStatus.CONFLICT);
 	}
 	
 	@ExceptionHandler(SenhaException.class)
@@ -64,6 +95,37 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 	    );
 
 	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
+	@ExceptionHandler(TelefoneException.class)
+	private ResponseEntity<Object> handleTelefoneException(TelefoneException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	            HttpStatus.UNPROCESSABLE_ENTITY.value(),
+	            "Erro no telefone fornecido",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
+	
+	@ExceptionHandler(CpfException.class)
+	private ResponseEntity<Object> handleCpfException(CpfException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	    		HttpStatus.CONFLICT.value(),
+	            "Erro no CPF fornecido",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.CONFLICT);
 	}
 	
 	

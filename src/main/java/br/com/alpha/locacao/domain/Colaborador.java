@@ -50,7 +50,7 @@ public class Colaborador implements UserDetails, Serializable {
 
 	@Column(name = "nome")
 	@NotBlank(message = "Nome nao pode estar vazio")
-	@Size(min = 3, max = 255, message = "O nome deve ter entre 3 e 255 caracteres.")
+	@Size(max = 255, message = "O nome deve ter max. 255 caracteres.")
 	private String nome;
 
 	@Column(name = "senha")
@@ -63,7 +63,7 @@ public class Colaborador implements UserDetails, Serializable {
 	private String cpf;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-	@NotNull
+	@NotNull(message = "Data Nascimento nao pode estar vazio")
 	@Column(nullable = false, name = "data_nascimento")
 	@Temporal(TemporalType.DATE)
 	private Date dataNascimento;
@@ -78,8 +78,28 @@ public class Colaborador implements UserDetails, Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "id_endereco", referencedColumnName = "id")
+	@NotNull(message = "O endereço nao pode estar vazio")
 	private Endereco endereco;
-
+	
+	@Column(name = "cargo")
+	@NotBlank(message = "Cargo nao pode estar vazio")
+	@Size(max = 255, message = "O cargo deve ter max. 255 caracteres.")
+	private String cargo;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+	@NotNull(message = "Data Contratação nao pode estar vazio")
+	@Column(nullable = false, name = "data_contratacao")
+	@Temporal(TemporalType.DATE)
+	private Date dataContratacao;
+	
+	@Column(name = "dependente")
+	@NotNull(message = "Dependente nao pode estar vazio")
+	private Integer dependente;
+	
+	@Column(name = "salario")
+	@NotNull(message = "Salario nao pode estar vazio")
+	private Double salario;
+	
 	@JsonManagedReference
 	@OneToMany(mappedBy = "id.colaborador", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<ColaboradorPerfil> colaboradorPerfis = new HashSet<>();
@@ -154,6 +174,38 @@ public class Colaborador implements UserDetails, Serializable {
 
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
+	}
+	
+	public String getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(String cargo) {
+		this.cargo = cargo;
+	}
+
+	public Date getDataContratacao() {
+		return dataContratacao;
+	}
+
+	public void setDataContratacao(Date dataContratacao) {
+		this.dataContratacao = dataContratacao;
+	}
+
+	public Integer getDependente() {
+		return dependente;
+	}
+
+	public void setDependente(Integer dependente) {
+		this.dependente = dependente;
+	}
+
+	public Double getSalario() {
+		return salario;
+	}
+
+	public void setSalario(Double salario) {
+		this.salario = salario;
 	}
 
 	@Override

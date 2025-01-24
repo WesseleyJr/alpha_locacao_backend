@@ -12,5 +12,7 @@ public interface ColaboradorRepository extends JpaRepository<Colaborador, Long> 
 	Colaborador findByEmail(String email);
 	
 	Colaborador findByCpf(String cpf);
+	
+	Colaborador findByTelefone(String telefone);
 }
 
