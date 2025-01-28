@@ -100,6 +100,12 @@ public class Colaborador implements UserDetails, Serializable {
 	@NotNull(message = "Salario nao pode estar vazio")
 	private Double salario;
 	
+    @OneToMany(mappedBy = "colaborador", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Telefone> telefones;
+    
+    @OneToMany(mappedBy = "colaborador", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<DadosBancarios> dadosBancarios;
+	
 	@JsonManagedReference
 	@OneToMany(mappedBy = "id.colaborador", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<ColaboradorPerfil> colaboradorPerfis = new HashSet<>();
@@ -206,6 +212,22 @@ public class Colaborador implements UserDetails, Serializable {
 
 	public void setSalario(Double salario) {
 		this.salario = salario;
+	}
+	
+	public List<Telefone> getTelefones() {
+		return telefones;
+	}
+
+	public void setTelefones(List<Telefone> telefones) {
+		this.telefones = telefones;
+	}
+	
+	public List<DadosBancarios> getDadosBancarios() {
+		return dadosBancarios;
+	}
+
+	public void setDadosBancarios(List<DadosBancarios> dadosBancarios) {
+		this.dadosBancarios = dadosBancarios;
 	}
 
 	@Override

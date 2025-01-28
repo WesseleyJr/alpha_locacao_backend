@@ -9,17 +9,16 @@ import org.hibernate.validator.constraints.br.CPF;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.alpha.locacao.domain.Colaborador;
-import br.com.alpha.locacao.domain.Endereco;
-import jakarta.persistence.Column;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import br.com.alpha.locacao.domain.DadosBancarios;
+import br.com.alpha.locacao.domain.Telefone;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record ColaboradorDTO(
-        
+
         Long id,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         @NotNull(message = "Data de nascimento não pode estar vazia.")
@@ -33,24 +32,20 @@ public record ColaboradorDTO(
         @Email(message = "E-mail inválido")
         @NotBlank(message = "E-mail não pode estar vazio.")
         String email,
-        @NotBlank(message = "Telefone não pode estar vazio")
-        @Size(min = 10, max = 11, message = "Telefone deve ter 10 ou 11 dígitos.")
-        String telefone,
-        @NotBlank(message = "CEP não pode estar vazio")
-        @Size(min = 8, max = 8, message = "CEP deve ter 8 dígitos.")
         List<String> perfis,
-        Endereco endereco,
-    	@NotBlank(message = "Cargo nao pode estar vazio")
-    	@Size(min = 3, max = 255, message = "O cargo deve ter entre 3 e 255 caracteres.")
-    	String cargo,
-    	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    	@NotNull(message = "Data Contratação nao pode estar vazio")
-    	Date dataContratacao,
-    	@NotNull(message = "Dependente nao pode estar vazio")
+        String cargo,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+        @NotNull(message = "Data de contratação não pode estar vazia.")
+        Date dataContratacao,
+        @NotNull(message = "Dependente não pode estar vazio.")
         Integer dependente,
-    	@NotNull(message = "Salario nao pode estar vazio")
-    	Double salario
+        @NotNull(message = "Salário não pode estar vazio.")
+        Double salario,
+        EnderecoDTO endereco,
+        List<DadosBancariosPessoaDTO> dadosBancarios,
+        List<TelefonePessoaDTO> telefones             
 ) {
+    
     public Colaborador toEntity() {
         Colaborador colaborador = new Colaborador();
         colaborador.setId(this.id);
@@ -58,32 +53,53 @@ public record ColaboradorDTO(
         colaborador.setNome(this.nome);
         colaborador.setCpf(this.cpf);
         colaborador.setEmail(this.email);
-        colaborador.setTelefone(this.telefone);
         colaborador.setCargo(this.cargo);
-        colaborador.setSalario(this.salario);
         colaborador.setDataContratacao(this.dataContratacao);
         colaborador.setDependente(this.dependente);
+        colaborador.setSalario(this.salario);
+        
+        colaborador.setEndereco(this.endereco.toEntity());
+        
+        List<DadosBancarios> dadosBancariosList = this.dadosBancarios.stream()
+                .map(DadosBancariosPessoaDTO::toEntity)
+                .collect(Collectors.toList());
+        colaborador.setDadosBancarios(dadosBancariosList);
+
+        List<Telefone> telefonesList = this.telefones.stream()
+                .map(TelefonePessoaDTO::toEntity)
+                .collect(Collectors.toList());
+        colaborador.setTelefones(telefonesList);
+
         return colaborador;
     }
-
+    
     public static ColaboradorDTO toDto(Colaborador colaborador) {
         List<String> perfis = colaborador.getColaboradorPerfis().stream()
                                          .map(cp -> cp.getId().getPerfil().getNome())
                                          .collect(Collectors.toList());
-                                         
+
+        List<DadosBancariosPessoaDTO> dadosBancarios = colaborador.getDadosBancarios().stream()
+                .map(DadosBancariosPessoaDTO::toDto)
+                .collect(Collectors.toList());
+
+        List<TelefonePessoaDTO> telefones = colaborador.getTelefones().stream()
+                .map(TelefonePessoaDTO::fromEntity)
+                .collect(Collectors.toList());
+
         return new ColaboradorDTO(
                 colaborador.getId(),
                 colaborador.getDataNascimento(),
                 colaborador.getNome(),
                 colaborador.getCpf(),
                 colaborador.getEmail(),
-                colaborador.getTelefone(),
                 perfis,
-                colaborador.getEndereco(),
                 colaborador.getCargo(),
                 colaborador.getDataContratacao(),
                 colaborador.getDependente(),
-                colaborador.getSalario()
+                colaborador.getSalario(),
+                EnderecoDTO.toDto(colaborador.getEndereco()), 
+                dadosBancarios,
+                telefones
         );
     }
 }

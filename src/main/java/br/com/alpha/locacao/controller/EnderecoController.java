@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.alpha.locacao.domain.Endereco;
+import br.com.alpha.locacao.dto.EnderecoDTO;
 import br.com.alpha.locacao.service.EnderecoService;
 import jakarta.validation.Valid;
 
@@ -29,25 +30,25 @@ public class EnderecoController {
 	private EnderecoService enderecoService;
 
 	@GetMapping
-	public List<Endereco> listar() {
+	public List<EnderecoDTO> listar() {
 		return enderecoService.listar();
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Endereco> buscarPorId(@PathVariable Long id) {
+	public ResponseEntity<EnderecoDTO> buscarPorId(@PathVariable Long id) {
 		return ResponseEntity.ok(enderecoService.buscarPorId(id));
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Endereco> inserir(@Valid @RequestBody Endereco endereco) {
-		Endereco end = enderecoService.inserir(endereco);
+	public ResponseEntity<EnderecoDTO> inserir(@Valid @RequestBody Endereco endereco) {
+		EnderecoDTO end = enderecoService.inserir(endereco);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(end).toUri();
 		return ResponseEntity.created(uri).body(end);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Endereco> atualizar(@PathVariable Long id, @Valid @RequestBody Endereco endereco) {
+	@PutMapping("/{id}")  
+	public ResponseEntity<EnderecoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody Endereco endereco) {
 		return ResponseEntity.ok(enderecoService.atualizar(id, endereco));
 	}
 	

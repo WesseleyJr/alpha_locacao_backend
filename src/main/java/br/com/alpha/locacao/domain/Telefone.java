@@ -50,6 +50,10 @@ public class Telefone {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_pessoa_juridica", referencedColumnName = "id")
 	private PessoaJuridica pessoaJuridica;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_colaborador", referencedColumnName = "id")
+	private Colaborador colaborador;
 
 	public Long getId() {
 		return id;
@@ -107,9 +111,12 @@ public class Telefone {
 		this.pessoaJuridica = pessoaJuridica;
 	}
 
+	public Colaborador getColaborador() {
+		return colaborador;
+	}
 
-	
-	
-	
+	public void setColaborador(Colaborador colaborador) {
+		this.colaborador = colaborador;
+	}
 
 }

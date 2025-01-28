@@ -1,6 +1,7 @@
 package br.com.alpha.locacao.dto;
 
 import br.com.alpha.locacao.constants.TipoTelefone;
+import br.com.alpha.locacao.domain.Colaborador;
 import br.com.alpha.locacao.domain.PessoaFisica;
 import br.com.alpha.locacao.domain.PessoaJuridica;
 import br.com.alpha.locacao.domain.Telefone;
@@ -27,10 +28,12 @@ public record TelefoneInserirDTO(
 
         Long idPessoaFisica,
 
-        Long idPessoaJuridica
+        Long idPessoaJuridica,
+        
+        Long idColaborador
 ) {
 
-    public Telefone toEntity(PessoaFisica pessoaFisica, PessoaJuridica pessoaJuridica) {
+    public Telefone toEntity(PessoaFisica pessoaFisica, PessoaJuridica pessoaJuridica, Colaborador colaborador) {
         Telefone telefone = new Telefone();
         telefone.setNumero(this.numero);
         telefone.setTipo(this.tipo);
@@ -45,6 +48,10 @@ public record TelefoneInserirDTO(
             if (pessoaJuridica != null) {
                 telefone.setPessoaJuridica(pessoaJuridica);
             }
+        }else if (idColaborador != null) {
+        	if(colaborador != null) {
+        		telefone.setColaborador(colaborador);
+        	}
         }
 
         return telefone;
@@ -57,7 +64,8 @@ public record TelefoneInserirDTO(
                 telefone.getDdd(),
                 telefone.getCodigoPais(),
                 telefone.getPessoaFisica() != null ? telefone.getPessoaFisica().getId() : null,
-                telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getId() : null
+                telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getId() : null,
+                telefone.getColaborador() != null ? telefone.getColaborador().getId() : null
         );
     }
 }

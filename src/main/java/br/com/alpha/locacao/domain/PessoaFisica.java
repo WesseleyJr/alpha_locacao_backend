@@ -101,10 +101,10 @@ public class PessoaFisica {
 	@NotNull(message = "O endereço nao pode estar vazio")
 	private Endereco endereco;
 	
-    @OneToMany(mappedBy = "pessoaFisica", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pessoaFisica", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Telefone> telefones;
     
-    @OneToMany(mappedBy = "pessoaFisica", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pessoaFisica", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<DadosBancarios> dadosBancarios;
 
 	public Long getId() {

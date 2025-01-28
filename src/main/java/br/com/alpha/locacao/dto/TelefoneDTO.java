@@ -1,6 +1,7 @@
 package br.com.alpha.locacao.dto;
 
 import br.com.alpha.locacao.constants.TipoTelefone;
+import br.com.alpha.locacao.domain.Colaborador;
 import br.com.alpha.locacao.domain.PessoaFisica;
 import br.com.alpha.locacao.domain.PessoaJuridica;
 import br.com.alpha.locacao.domain.Telefone;
@@ -37,13 +38,13 @@ public record TelefoneDTO(
             telefone.getTipo(),
             telefone.getDdd(),
             telefone.getCodigoPais(),
-            telefone.getPessoaFisica() != null ? telefone.getPessoaFisica().getNome() : telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getRazaoSocial() : null,
-            telefone.getPessoaFisica() != null ? telefone.getPessoaFisica().getCpf() : telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getCnpj() : null,
-            telefone.getPessoaFisica() != null ? telefone.getPessoaFisica().getId() : telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getId() : null
+            telefone.getPessoaFisica() != null ? telefone.getPessoaFisica().getNome() : telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getRazaoSocial() : telefone.getColaborador() != null ? telefone.getColaborador().getNome() : null,
+            telefone.getPessoaFisica() != null ? telefone.getPessoaFisica().getCpf() : telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getCnpj() : telefone.getColaborador() != null ? telefone.getColaborador().getCpf() : null,
+            telefone.getPessoaFisica() != null ? telefone.getPessoaFisica().getId() : telefone.getPessoaJuridica() != null ? telefone.getPessoaJuridica().getId() : telefone.getColaborador() != null ? telefone.getColaborador().getId() : null
         );
     }
 
-    public Telefone toEntity(PessoaFisica pessoaFisica, PessoaJuridica pessoaJuridica) {
+    public Telefone toEntity(PessoaFisica pessoaFisica, PessoaJuridica pessoaJuridica, Colaborador colaborador) {
         Telefone telefone = new Telefone();
         telefone.setNumero(this.numero);
         telefone.setTipo(this.tipo);
@@ -54,6 +55,8 @@ public record TelefoneDTO(
             telefone.setPessoaFisica(pessoaFisica);
         } else if (pessoaJuridica != null && pessoaJuridica.getId().equals(this.idTitular)) {
             telefone.setPessoaJuridica(pessoaJuridica);
+        }else if (colaborador != null && colaborador.getId().equals(this.idTitular)) {
+            telefone.setColaborador(colaborador);
         }
 
         return telefone;

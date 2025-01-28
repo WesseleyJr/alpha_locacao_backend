@@ -54,11 +54,9 @@ public record PessoaFisicaInserirDTO(
 
         @NotNull(message = "O sexo não pode estar vazio") Sexo sexo,
 
-        @NotNull(message = "O endereço não pode estar vazio") Endereco endereco,
+        @NotNull(message = "O endereço não pode estar vazio") Endereco endereco
 
-        @NotNull(message = "Os telefones não podem estar vazios") List<Telefone> telefones,
-
-        @NotNull(message = "Os dados bancários não podem estar vazios") List<DadosBancarios> dadosBancarios) {
+) {
 
     public PessoaFisica toEntity(PessoaFisica pessoaFisica) {
         pessoaFisica.setNome(nome);
@@ -74,9 +72,6 @@ public record PessoaFisicaInserirDTO(
         pessoaFisica.setEstadoCivil(estadoCivil);
         pessoaFisica.setSexo(sexo);
         pessoaFisica.setEndereco(endereco);
-        pessoaFisica.setTelefones(telefones);
-        pessoaFisica.setDadosBancarios(dadosBancarios);
-
         return pessoaFisica;
     }
 
@@ -94,9 +89,8 @@ public record PessoaFisicaInserirDTO(
                 pessoaFisica.getDataEmissao(),
                 pessoaFisica.getEstadoCivil(),
                 pessoaFisica.getSexo(),
-                pessoaFisica.getEndereco(),
-                pessoaFisica.getTelefones(),
-                pessoaFisica.getDadosBancarios()
+                pessoaFisica.getEndereco()
+
         );
     }
 }

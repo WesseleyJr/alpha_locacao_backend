@@ -1,14 +1,17 @@
 package br.com.alpha.locacao.dto;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.validator.constraints.br.CPF;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import br.com.alpha.locacao.domain.DadosBancarios;
 import br.com.alpha.locacao.domain.Endereco;
 import br.com.alpha.locacao.domain.Perfil;
+import br.com.alpha.locacao.domain.Telefone;
 import jakarta.persistence.Column;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -59,15 +62,19 @@ public class ColaboradorInserirDTO {
 	@NotNull(message = "Salario nao pode estar vazio")
 	private Double salario;
 	
-	private Endereco endereco;
+	private EnderecoDTO endereco;
+	
+	private List<TelefonePessoaDTO> telefones;
+	
+	private List<DadosBancariosPessoaDTO> dadosBancarios;
 	
 	private Set<Perfil> perfis;
 	
-	public Endereco getEndereco() {
+	public EnderecoDTO getEndereco() {
 		return endereco;
 	}
 
-	public void setEndereco(Endereco endereco) {
+	public void setEndereco(EnderecoDTO endereco) {
 		this.endereco = endereco;
 	}
 
@@ -166,5 +173,21 @@ public class ColaboradorInserirDTO {
 	public void setSalario(Double salario) {
 		this.salario = salario;
 	}
-	
+
+	public List<TelefonePessoaDTO> getTelefones() {
+		return telefones;
+	}
+
+	public void setTelefones(List<TelefonePessoaDTO> telefones) {
+		this.telefones = telefones;
+	}
+
+	public List<DadosBancariosPessoaDTO> getDadosBancarios() {
+		return dadosBancarios;
+	}
+
+	public void setDadosBancarios(List<DadosBancariosPessoaDTO> dadosBancarios) {
+		this.dadosBancarios = dadosBancarios;
+	}
+
 }

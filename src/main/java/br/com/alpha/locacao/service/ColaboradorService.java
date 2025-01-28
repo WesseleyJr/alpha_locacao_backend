@@ -14,8 +14,11 @@ import br.com.alpha.locacao.domain.Colaborador;
 import br.com.alpha.locacao.domain.ColaboradorPerfil;
 import br.com.alpha.locacao.domain.Endereco;
 import br.com.alpha.locacao.domain.Perfil;
+import br.com.alpha.locacao.domain.Telefone;
 import br.com.alpha.locacao.dto.ColaboradorDTO;
 import br.com.alpha.locacao.dto.ColaboradorInserirDTO;
+import br.com.alpha.locacao.dto.EnderecoDTO;
+import br.com.alpha.locacao.dto.TelefonePessoaDTO;
 import br.com.alpha.locacao.exception.CpfException;
 import br.com.alpha.locacao.exception.EmailException;
 import br.com.alpha.locacao.exception.SenhaException;
@@ -33,10 +36,13 @@ public class ColaboradorService {
 
 	@Autowired
 	private EnderecoRepository enderecoRepository;
-
+	
 	@Autowired
 	private EnderecoService enderecoService;
-
+	
+	@Autowired
+	private TelefoneService telefoneService;
+	
 	@Autowired
 	private PerfilService perfilService;
 
@@ -53,24 +59,20 @@ public class ColaboradorService {
 	}
 
 	@Transactional
-	public ColaboradorDTO inserir(ColaboradorInserirDTO colaboradorInserirDTO) throws EmailException, SenhaException, TelefoneException, CpfException {
+	public ColaboradorDTO inserir(ColaboradorInserirDTO colaboradorInserirDTO) throws EmailException, SenhaException, CpfException {
 		if (!colaboradorInserirDTO.getSenha().equals(colaboradorInserirDTO.getConfirmaSenha())) {
 			throw new SenhaException("Senha e Confirma Senha não são iguais");
 		}
 		if (colaboradorRepository.findByEmail(colaboradorInserirDTO.getEmail()) != null) {
 			throw new EmailException("Email já existente");
 		}
-		if (colaboradorRepository.findByTelefone(colaboradorInserirDTO.getTelefone()) != null) {
-			throw new TelefoneException("Telefone já existente");
-		}
 		if (colaboradorRepository.findByCpf(colaboradorInserirDTO.getCpf()) != null) {
 			throw new CpfException("Cpf já existente");
 		}
 		
 		
-		Endereco enderecoAssociado = null;
 
-		enderecoAssociado = verificacao(colaboradorInserirDTO);
+		Endereco enderecoAssociado = verificacaoEndereco(colaboradorInserirDTO.getEndereco().toEntity());
 		
 		Colaborador colaborador = new Colaborador();
 		colaborador.setNome(Normalizer.normalize(colaboradorInserirDTO.getNome(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""));
@@ -123,7 +125,7 @@ public class ColaboradorService {
 
 		Endereco enderecoAssociado = null;
 
-		enderecoAssociado = verificacao(colaboradorInserirDTO);
+		enderecoAssociado = verificacaoEndereco(colaboradorInserirDTO);
 
 		Colaborador colaborador = colaboradorOPT.get();
 		colaborador.setNome(colaboradorInserirDTO.getNome());
@@ -153,6 +155,7 @@ public class ColaboradorService {
 
 	}
 
+	
 	@Transactional
 	public void deletar(Long id) {
 		if (!colaboradorRepository.existsById(id)) {
@@ -161,25 +164,27 @@ public class ColaboradorService {
 		colaboradorRepository.deleteById(id);
 	}
 
-	private Endereco verificacao(ColaboradorInserirDTO colaboradorInserirDto){
+	
+	private Endereco verificacaoEndereco(Endereco enderecoRecebido){
 
 		List<Endereco> byLogradouro = enderecoRepository
-				.findByLogradouro(colaboradorInserirDto.getEndereco().getLogradouro());
+				.findByLogradouro(enderecoRecebido.getLogradouro());
 
 		Endereco enderecoAssociado = null;
 
 		for (Endereco endereco : byLogradouro) {
-			if (endereco.getNumero().equals(colaboradorInserirDto.getEndereco().getNumero())
-					&& endereco.getComplemento().toUpperCase().equals(colaboradorInserirDto.getEndereco().getComplemento().toUpperCase())
-					&& endereco.getBairro().toUpperCase().equals(colaboradorInserirDto.getEndereco().getBairro().toUpperCase())
-					&& endereco.getCidade().toUpperCase().equals(colaboradorInserirDto.getEndereco().getCidade().toUpperCase())) {
+			if (endereco.getNumero().equals(endereco.getNumero())
+					&& endereco.getComplemento().toUpperCase().equals(enderecoRecebido.getComplemento().toUpperCase())
+					&& endereco.getBairro().toUpperCase().equals(enderecoRecebido.getBairro().toUpperCase())
+					&& endereco.getCidade().toUpperCase().equals(enderecoRecebido.getCidade().toUpperCase())) {
 				enderecoAssociado = endereco;
 				return enderecoAssociado;
 			}
 		}
 
-		enderecoAssociado = enderecoService.inserir(colaboradorInserirDto.getEndereco());
+		enderecoAssociado = enderecoService.inserir(enderecoRecebido).toEntity();
 		return enderecoAssociado;
 	}
+	
 
 }
