@@ -36,6 +36,68 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
 	}
 	
+	@ExceptionHandler(PessoaFisicaException.class)
+	private ResponseEntity<Object> handlePessoaFisicaException(PessoaFisicaException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	            HttpStatus.UNPROCESSABLE_ENTITY.value(),
+	            "Erro no envio de Pessoa Fisica",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
+	
+	@ExceptionHandler(RazaoSocialException.class)
+	private ResponseEntity<Object> handleRazaoSocialException(RazaoSocialException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	            HttpStatus.UNPROCESSABLE_ENTITY.value(),
+	            "Erro no envio de Razão Social",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
+	@ExceptionHandler(CnpjException.class)
+	private ResponseEntity<Object> handleCpnjException(CnpjException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	            HttpStatus.UNPROCESSABLE_ENTITY.value(),
+	            "Erro no envio de CNPJ",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
+	
+	@ExceptionHandler(EnderecoException.class)
+	private ResponseEntity<Object> handleEnderecoException(EnderecoException ex, WebRequest request) {
+	    List<String> erros = new ArrayList<>();
+	    erros.add(ex.getMessage());
+
+	    ErroResposta erroResposta = new ErroResposta(
+	            HttpStatus.UNPROCESSABLE_ENTITY.value(),
+	            "Erro no envio de endereco",
+	            LocalDateTime.now(),
+	            erros
+	    );
+
+	    return new ResponseEntity<>(erroResposta, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
 
 	@ExceptionHandler(ConstantsException.class)
 	private ResponseEntity<Object> handleConstantsException(ConstantsException ex, WebRequest request) {

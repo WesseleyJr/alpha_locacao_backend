@@ -150,7 +150,7 @@ public class TelefoneService {
 	private void verificarTitular(TelefoneInserirDTO telefoneInserirDTO) {
 		if (telefoneInserirDTO.idColaborador() == null && telefoneInserirDTO.idPessoaFisica() == null && telefoneInserirDTO.idPessoaJuridica() == null) {
 			throw new TelefoneException(
-					"É necessário associar o telefone a uma Pessoa Física ou a uma Pessoa Jurídica.");
+					"É necessário associar o telefone a uma Pessoa Física ou a uma Pessoa Jurídica ou a um Colaborador.");
 		}
 		
 		int count = 0;
@@ -161,7 +161,7 @@ public class TelefoneService {
 		
 		if(count > 1) {
 			throw new TelefoneException(
-					"Não é permitido associar o telefone a uma Pessoa Física e a uma Pessoa Jurídica ao mesmo tempo.");
+					"Não é permitido associar o telefone a uma Pessoa Física, uma Pessoa Jurídica ao mesmo tempo e a um Colaborador.");
 		}
 	}
 

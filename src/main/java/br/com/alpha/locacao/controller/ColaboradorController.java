@@ -4,11 +4,10 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +31,11 @@ public class ColaboradorController {
     public List<ColaboradorDTO> listarTodos() {
         return colaboradorService.listarTodos();
     }
+    
+	@GetMapping("/{id}")
+	public ResponseEntity<ColaboradorDTO> buscarPorId(@PathVariable Long id) {
+		return ResponseEntity.ok(colaboradorService.buscarId(id));
+	}
 
     @PostMapping
     public ResponseEntity<ColaboradorDTO> salvar(@Valid @RequestBody ColaboradorInserirDTO colaboradorInserirDto) {
@@ -44,6 +48,17 @@ public class ColaboradorController {
     	
     	return ResponseEntity.created(uri).body(novoColaborador);
     }
+    
+//	@PatchMapping("/{id}")  
+//	public ResponseEntity<ColaboradorDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ColaboradorPatchDTO colaboradorPatchDTO) {
+//		return ResponseEntity.ok(colaboradorService.atualizar(colaboradorPatchDTO,id));
+//	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deletar(@PathVariable Long id){
+		colaboradorService.deletar(id);
+		return ResponseEntity.noContent().build();
+	}
 
 }
 

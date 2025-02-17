@@ -13,7 +13,9 @@ import br.com.alpha.locacao.domain.PessoaFisica;
 import br.com.alpha.locacao.domain.PessoaJuridica;
 import br.com.alpha.locacao.dto.DadosBancariosDTO;
 import br.com.alpha.locacao.dto.DadosBancariosInserirDTO;
+import br.com.alpha.locacao.dto.TelefoneInserirDTO;
 import br.com.alpha.locacao.exception.DadosBancariosException;
+import br.com.alpha.locacao.exception.TelefoneException;
 import br.com.alpha.locacao.repository.ColaboradorRepository;
 import br.com.alpha.locacao.repository.DadosBancariosRepository;
 import br.com.alpha.locacao.repository.PessoaFisicaRepository;
@@ -65,6 +67,8 @@ public class DadosBancariosService {
 					"É necessário associar o dados bancarios a uma pessoa.");
 		}
 		
+		verificarTitular(dadosBancariosInserirDTO);
+		
 		PessoaFisica pessoaFisica = null;
 		PessoaJuridica pessoaJuridica = null;
 		Colaborador colaborador = null;
@@ -114,6 +118,8 @@ public class DadosBancariosService {
 					"É necessário associar o dados bancarios a uma pessoa.");
 		}
 		
+		verificarTitular(dadosBancariosInserirDTO);
+		
 		PessoaFisica pessoaFisica = null;
 		PessoaJuridica pessoaJuridica = null;
 		Colaborador colaborador = null;
@@ -154,6 +160,25 @@ public class DadosBancariosService {
 		}
 		dadosBancariosRepository.deleteById(id);
 	}
+	
+	private void verificarTitular(DadosBancariosInserirDTO dadosBancariosInserirDTO) {
+		if (dadosBancariosInserirDTO.idColaborador() == null && dadosBancariosInserirDTO.idPessoaFisica() == null && dadosBancariosInserirDTO.idPessoaJuridica() == null) {
+			throw new TelefoneException(
+					"É necessário associar o Dados bancarios a uma Pessoa Física ou a uma Pessoa Jurídica ou a um Colaborador.");
+		}
+		
+		int count = 0;
+		
+		if(dadosBancariosInserirDTO.idColaborador() != null) count++;
+		if(dadosBancariosInserirDTO.idPessoaFisica() != null) count++;
+		if(dadosBancariosInserirDTO.idPessoaJuridica() != null) count++;
+		
+		if(count > 1) {
+			throw new TelefoneException(
+					"Não é permitido associar o dados bancarios a uma Pessoa Física, uma Pessoa Jurídica ao mesmo tempo e a um Colaborador.");
+		}
+	}
+
 
 	private PessoaFisica buscarPessoaFisicaPorId(Long id) {
 		return Optional.ofNullable(id).flatMap(pessoaFisicaRepository::findById)

@@ -1,5 +1,7 @@
 package br.com.alpha.locacao.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import br.com.alpha.locacao.constants.TipoConta;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -61,14 +63,17 @@ public class DadosBancarios {
 	@Size(max = 5, message = "Digito conta deve ter max. 5 caracteres.")
 	private String digitoConta;
 	
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name = "id_pessoa_fisica", referencedColumnName = "id")
 	private PessoaFisica pessoaFisica;
 	
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name = "id_pessoa_juridica", referencedColumnName = "id")
 	private PessoaJuridica pessoaJuridica;
 	
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name = "id_colaborador", referencedColumnName = "id")
 	private Colaborador colaborador;

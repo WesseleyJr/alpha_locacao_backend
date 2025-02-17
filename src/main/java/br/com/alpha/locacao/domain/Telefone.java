@@ -1,5 +1,7 @@
 package br.com.alpha.locacao.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import br.com.alpha.locacao.constants.TipoTelefone;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,14 +45,17 @@ public class Telefone {
 	@Size(max = 5, message = "Código pais deve ter max. 5 caracteres.")
 	private String codigoPais;
 	
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_pessoa_fisica", referencedColumnName = "id")
 	private PessoaFisica pessoaFisica;
 	
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_pessoa_juridica", referencedColumnName = "id")
 	private PessoaJuridica pessoaJuridica;
 	
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_colaborador", referencedColumnName = "id")
 	private Colaborador colaborador;

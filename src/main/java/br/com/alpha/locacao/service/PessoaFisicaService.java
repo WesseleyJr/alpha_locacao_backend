@@ -1,33 +1,16 @@
 package br.com.alpha.locacao.service;
 
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.alpha.locacao.domain.Colaborador;
-import br.com.alpha.locacao.domain.ColaboradorPerfil;
-import br.com.alpha.locacao.domain.DadosBancarios;
 import br.com.alpha.locacao.domain.Endereco;
-import br.com.alpha.locacao.domain.Perfil;
 import br.com.alpha.locacao.domain.PessoaFisica;
-import br.com.alpha.locacao.domain.Telefone;
-import br.com.alpha.locacao.dto.ColaboradorDTO;
-import br.com.alpha.locacao.dto.ColaboradorInserirDTO;
-import br.com.alpha.locacao.dto.DadosBancariosDTO;
-import br.com.alpha.locacao.dto.DadosBancariosInserirDTO;
 import br.com.alpha.locacao.dto.PessoaFisicaDTO;
 import br.com.alpha.locacao.dto.PessoaFisicaInserirDTO;
-import br.com.alpha.locacao.dto.TelefoneDTO;
-import br.com.alpha.locacao.dto.TelefoneInserirDTO;
 import br.com.alpha.locacao.exception.CpfException;
 import br.com.alpha.locacao.exception.EmailException;
-import br.com.alpha.locacao.exception.SenhaException;
-import br.com.alpha.locacao.exception.TelefoneException;
 import br.com.alpha.locacao.repository.EnderecoRepository;
 import br.com.alpha.locacao.repository.PessoaFisicaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -66,7 +49,7 @@ public class PessoaFisicaService {
 		
 		Endereco enderecoAssociado = null;
 
-		enderecoAssociado = inserirEndereco(pessoaFisicaInserirDTO.endereco());
+		enderecoAssociado = verificacaoEndereco(pessoaFisicaInserirDTO.endereco());
 		
 		PessoaFisica pessoaFisica = new PessoaFisica();
 		
@@ -91,15 +74,15 @@ public class PessoaFisicaService {
 	}
 
 	
-	private Endereco inserirEndereco(Endereco enderecoRecebido){
+	private Endereco verificacaoEndereco(Endereco enderecoRecebido){
 
 		List<Endereco> byLogradouro = enderecoRepository
-				.findByLogradouro(enderecoRecebido.getLogradouro());
+				.findByLogradouro(enderecoRecebido.getLogradouro().toLowerCase());
 
 		Endereco enderecoAssociado = null;
 
 		for (Endereco endereco : byLogradouro) {
-			if (endereco.getNumero().equals(enderecoRecebido.getNumero())
+			if (endereco.getNumero().equals(endereco.getNumero())
 					&& endereco.getComplemento().toUpperCase().equals(enderecoRecebido.getComplemento().toUpperCase())
 					&& endereco.getBairro().toUpperCase().equals(enderecoRecebido.getBairro().toUpperCase())
 					&& endereco.getCidade().toUpperCase().equals(enderecoRecebido.getCidade().toUpperCase())) {
@@ -108,7 +91,7 @@ public class PessoaFisicaService {
 			}
 		}
 
-		enderecoAssociado = enderecoService.inserir(enderecoRecebido);
+		enderecoAssociado = enderecoService.inserir(enderecoRecebido).toEntity();
 		return enderecoAssociado;
 	}
 

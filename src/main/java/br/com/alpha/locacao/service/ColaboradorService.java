@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +16,8 @@ import br.com.alpha.locacao.domain.Colaborador;
 import br.com.alpha.locacao.domain.ColaboradorPerfil;
 import br.com.alpha.locacao.domain.Endereco;
 import br.com.alpha.locacao.domain.Perfil;
-import br.com.alpha.locacao.domain.Telefone;
 import br.com.alpha.locacao.dto.ColaboradorDTO;
 import br.com.alpha.locacao.dto.ColaboradorInserirDTO;
-import br.com.alpha.locacao.dto.EnderecoDTO;
-import br.com.alpha.locacao.dto.TelefonePessoaDTO;
 import br.com.alpha.locacao.exception.CpfException;
 import br.com.alpha.locacao.exception.EmailException;
 import br.com.alpha.locacao.exception.SenhaException;
@@ -39,9 +38,6 @@ public class ColaboradorService {
 	
 	@Autowired
 	private EnderecoService enderecoService;
-	
-	@Autowired
-	private TelefoneService telefoneService;
 	
 	@Autowired
 	private PerfilService perfilService;
@@ -69,9 +65,7 @@ public class ColaboradorService {
 		if (colaboradorRepository.findByCpf(colaboradorInserirDTO.getCpf()) != null) {
 			throw new CpfException("Cpf já existente");
 		}
-		
-		
-
+				
 		Endereco enderecoAssociado = verificacaoEndereco(colaboradorInserirDTO.getEndereco().toEntity());
 		
 		Colaborador colaborador = new Colaborador();
@@ -102,59 +96,6 @@ public class ColaboradorService {
 		return ColaboradorDTO.toDto(colaboradorSalvo);
 	}
 
-	@Transactional
-	public ColaboradorDTO atualizar(ColaboradorInserirDTO colaboradorInserirDTO, Long id) throws EmailException, SenhaException, TelefoneException, CpfException {
-		Optional<Colaborador> colaboradorOPT = colaboradorRepository.findById(id);
-		
-		if (!colaboradorInserirDTO.getSenha().equals(colaboradorInserirDTO.getConfirmaSenha())) {
-			throw new SenhaException("Senha e Confirma Senha não são iguais");
-		}
-		if (colaboradorRepository.findByEmail(colaboradorInserirDTO.getEmail()) != null) {
-			throw new EmailException("Email já existente");
-		}
-		if (colaboradorRepository.findByTelefone(colaboradorInserirDTO.getTelefone()) != null) {
-			throw new TelefoneException("Telefone já existente");
-		}
-		if (colaboradorRepository.findByCpf(colaboradorInserirDTO.getCpf()) != null) {
-			throw new CpfException("Cpf já existente");
-		}
-
-		if (colaboradorOPT.isEmpty()) {
-			throw new EntityNotFoundException("Colaborador não encontrado");
-		}
-
-		Endereco enderecoAssociado = null;
-
-		enderecoAssociado = verificacaoEndereco(colaboradorInserirDTO);
-
-		Colaborador colaborador = colaboradorOPT.get();
-		colaborador.setNome(colaboradorInserirDTO.getNome());
-		colaborador.setCpf(colaboradorInserirDTO.getCpf());
-		colaborador.setDataNascimento(colaboradorInserirDTO.getDataNascimento());
-		colaborador.setEmail(colaboradorInserirDTO.getEmail());
-		colaborador.setTelefone(colaboradorInserirDTO.getTelefone());
-		colaborador.setEndereco(enderecoAssociado);
-		colaborador.setCargo(colaboradorInserirDTO.getCargo());
-		colaborador.setSalario(colaboradorInserirDTO.getSalario());
-		colaborador.setDependente(colaboradorInserirDTO.getDependente());
-		colaborador.setDataContratacao(colaboradorInserirDTO.getDataContratacao());
-
-		colaborador.setSenha(encoder.encode(colaboradorInserirDTO.getSenha()));
-
-		Set<ColaboradorPerfil> perfis = new HashSet<>();
-		for (Perfil perfil : colaboradorInserirDTO.getPerfis()) {
-			perfil = perfilService.buscar(perfil.getId());
-			ColaboradorPerfil colaboradorPerfil = new ColaboradorPerfil(colaborador, perfil);
-			perfis.add(colaboradorPerfil);
-		}
-		colaborador.setColaboradorPerfis(perfis);
-
-		colaborador = colaboradorRepository.save(colaborador);
-
-		return ColaboradorDTO.toDto(colaborador);
-
-	}
-
 	
 	@Transactional
 	public void deletar(Long id) {
@@ -168,7 +109,7 @@ public class ColaboradorService {
 	private Endereco verificacaoEndereco(Endereco enderecoRecebido){
 
 		List<Endereco> byLogradouro = enderecoRepository
-				.findByLogradouro(enderecoRecebido.getLogradouro());
+				.findByLogradouro(enderecoRecebido.getLogradouro().toLowerCase());
 
 		Endereco enderecoAssociado = null;
 

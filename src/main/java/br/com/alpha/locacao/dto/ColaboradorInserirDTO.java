@@ -62,11 +62,7 @@ public class ColaboradorInserirDTO {
 	@NotNull(message = "Salario nao pode estar vazio")
 	private Double salario;
 	
-	private EnderecoDTO endereco;
-	
-	private List<TelefonePessoaDTO> telefones;
-	
-	private List<DadosBancariosPessoaDTO> dadosBancarios;
+	private EnderecoDTO endereco;	
 	
 	private Set<Perfil> perfis;
 	
@@ -174,20 +170,5 @@ public class ColaboradorInserirDTO {
 		this.salario = salario;
 	}
 
-	public List<TelefonePessoaDTO> getTelefones() {
-		return telefones;
-	}
-
-	public void setTelefones(List<TelefonePessoaDTO> telefones) {
-		this.telefones = telefones;
-	}
-
-	public List<DadosBancariosPessoaDTO> getDadosBancarios() {
-		return dadosBancarios;
-	}
-
-	public void setDadosBancarios(List<DadosBancariosPessoaDTO> dadosBancarios) {
-		this.dadosBancarios = dadosBancarios;
-	}
 
 }

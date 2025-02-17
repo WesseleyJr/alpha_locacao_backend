@@ -100,9 +100,11 @@ public class Colaborador implements UserDetails, Serializable {
 	@NotNull(message = "Salario nao pode estar vazio")
 	private Double salario;
 	
+	@JsonManagedReference
     @OneToMany(mappedBy = "colaborador", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Telefone> telefones;
     
+    @JsonManagedReference
     @OneToMany(mappedBy = "colaborador", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<DadosBancarios> dadosBancarios;
 	

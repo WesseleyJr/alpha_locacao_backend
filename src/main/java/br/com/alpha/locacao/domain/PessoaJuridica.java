@@ -1,9 +1,14 @@
 package br.com.alpha.locacao.domain;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -60,11 +65,17 @@ public class PessoaJuridica {
 	@JoinColumn(name = "id_endereco", referencedColumnName = "id")
 	private Endereco endereco;
 
-	@OneToMany(mappedBy = "pessoaJuridica", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
+	@OneToMany(mappedBy = "pessoaJuridica", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Telefone> telefones;
 
-	@OneToMany(mappedBy = "pessoaJuridica", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
+	@OneToMany(mappedBy = "pessoaJuridica", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<DadosBancarios> dadosBancarios;
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "id.pessoaJuridica", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Set<PessoaJuridicaPessoaFisica> pessoaJuridicaPessoaFisicas = new HashSet<>();
 
 	public Long getId() {
 		return id;
@@ -144,6 +155,14 @@ public class PessoaJuridica {
 
 	public void setDadosBancarios(List<DadosBancarios> dadosBancarios) {
 		this.dadosBancarios = dadosBancarios;
+	}
+
+	public Set<PessoaJuridicaPessoaFisica> getPessoaJuridicaPessoaFisicas() {
+		return pessoaJuridicaPessoaFisicas;
+	}
+
+	public void setPessoaJuridicaPessoaFisicas(Set<PessoaJuridicaPessoaFisica> pessoaJuridicaPessoaFisicas) {
+		this.pessoaJuridicaPessoaFisicas = pessoaJuridicaPessoaFisicas;
 	}
 
 }

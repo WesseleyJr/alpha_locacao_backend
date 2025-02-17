@@ -44,7 +44,7 @@ public class ConfigSecurity {
 	        	.requestMatchers(HttpMethod.POST, "/login").permitAll()
 	            .requestMatchers(HttpMethod.GET, "/colaborador/**").permitAll()
 	            .requestMatchers(HttpMethod.POST, "/colaborador/**").permitAll()
-	            .requestMatchers(HttpMethod.PUT, "/colaborador/**").permitAll()
+	            .requestMatchers(HttpMethod.PATCH, "/colaborador/**").permitAll()
 	            .requestMatchers(HttpMethod.DELETE, "/colaborador/**").hasAnyAuthority("ROLE_ADMIN")
 	            .requestMatchers(HttpMethod.GET, "/endereco/**").permitAll()
 	            .requestMatchers(HttpMethod.POST, "/endereco/**").permitAll()
@@ -60,6 +60,8 @@ public class ConfigSecurity {
 	            .requestMatchers(HttpMethod.DELETE, "/dadosbancarios/**").permitAll()
 	            .requestMatchers(HttpMethod.POST, "/pessoa/fisica/**").permitAll()
 	            .requestMatchers(HttpMethod.GET, "/pessoa/fisica/**").permitAll()
+	            .requestMatchers(HttpMethod.POST, "/pessoa/juridica/**").permitAll()
+	            .requestMatchers(HttpMethod.GET, "/pessoa/juridica/**").permitAll()
 	    )
 	    .httpBasic(Customizer.withDefaults())
 	    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
